@@ -28,13 +28,13 @@ async function checkStatus() {
 
         if (statusChanged) {
             if (lastStatusChange) {
-                console.log(`Wplace just went ${isUp ? 'up' : 'down'}! It was ${isUp ? 'down' : 'up'} ${stateChangedSinceStart ? `for ${Math.round((Date.now() - lastStatusChange) / 60 / 60 / 1000)} hour(s)` : 'since I started'}${!isUp && uptime ? `, and the backends uptime was ${Math.round(uptime.hours)} hour(s)` : ''}`);
+                console.log(`Wplace just went ${isUp ? 'up' : 'down'}! It was ${isUp ? 'down' : 'up'} ${stateChangedSinceStart ? `for ${Math.round(getLastStatusChange().hours)} hour(s)` : `since I started (${Math.round(getLastStatusChange().hours)} hour(s) ago)`}${!isUp && uptime ? `, and the backends uptime was ${Math.round(uptime.hours)} hour(s)` : ''}`);
                 alertStatus();
                 stateChangedSinceStart = true;
             }
             lastStatusChange = Date.now();
         } else {
-            console.log(`Wplace has been ${isUp ? 'up' : 'down'} since ${stateChangedSinceStart ? new Date(lastStatusChange).toUTCString() : 'I started'}`);
+            console.log(`Wplace has been ${isUp ? 'up' : 'down'} since ${stateChangedSinceStart ? new Date(lastStatusChange).toUTCString() : `I started (${Math.round(getLastStatusChange().hours)} hour(s) ago)`}`);
         }
     }).catch(err => {
         console.log('Failed to check status:');
@@ -50,7 +50,7 @@ async function alertStatus() {
         embeds: [
             {
                 title: `Wplace just went ${isUp ? 'up' : 'down'}!`,
-                description: `It was ${isUp ? 'down' : 'up'} ${stateChangedSinceStart ? `for ${Math.round((Date.now() - lastStatusChange) / 60 / 60 / 1000)} hour(s)` : 'since I started'}`,
+                description: `It was ${isUp ? 'down' : 'up'} ${stateChangedSinceStart ? `for ${Math.round(getLastStatusChange().hours)} hour(s)` : `since I started (${Math.round(getLastStatusChange().hours)} hour(s) ago)`}`,
                 color: isUp ? 4362485 : 16078658,
                 fields: [
                     ...(stateChangedSinceStart ? [{
@@ -106,5 +106,23 @@ function getUptime() {
         seconds,
         minutes,
         hours
+    };
+}
+
+function getLastStatusChange() {
+    if (!lastStatusChange) return null;
+    const date = Date.now();
+
+    const ms = date - lastStatusChange;
+    const seconds = ms / 1000;
+    const minutes = seconds / 60;
+    const hours = minutes / 60;
+
+    return {
+        ms,
+        seconds,
+        minutes,
+        hours,
+        date: new Date(lastStatusChange)
     };
 }
