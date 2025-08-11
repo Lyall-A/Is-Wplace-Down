@@ -1,5 +1,6 @@
 {
     "checkInterval": 5000,
     "webhooks": [],
-    "channels": []
+    "channels": [],
+    "botToken": ""
 }
