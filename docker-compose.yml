@@ -1,7 +1,7 @@
 services:
-  is-wplace-up:
+  is-wplace-down:
     build: .
-    container_name: is-wplace-up
+    container_name: is-wplace-down
     restart: unless-stopped
     volumes:
       - ./config.json:/data/config.json
