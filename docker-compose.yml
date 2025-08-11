@@ -1,0 +1,7 @@
+services:
+  is-wplace-up:
+    build: .
+    container_name: is-wplace-up
+    restart: unless-stopped
+    volumes:
+      - ./config.json:/data/config.json
