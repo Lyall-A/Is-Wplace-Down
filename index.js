@@ -15,6 +15,12 @@ async function checkStatus() {
         const isUp = res.status === 200;
         const statusChanged = status === null || (isUp && status === 0) || (!isUp && status === 1);
         const uptime = getUptime();
+
+        if (res.status === 429) {
+            console.log('Rate limited, can\'t check status');
+            return;
+        }
+
         if (statusChanged) status = isUp ? 1 : 0;
 
         if (isUp) {
@@ -92,6 +98,7 @@ async function alertStatus() {
 }
 
 function getUptime() {
+    return null; // TODO: uptime value is something like 15m49.858418485s, i aint parsing allat
     if (!lastHealth?.uptime) return null;
     const uptime = parseFloat(lastHealth.uptime);
     // const uptime = parseFloat('9429.1949199404s');
