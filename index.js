@@ -14,7 +14,7 @@ async function checkStatus() {
     await fetch('https://backend.wplace.live/health').then(res => {
         const isUp = res.status === 200;
         const statusChanged = status === null || (isUp && status === 0) || (!isUp && status === 1);
-        const uptime = getUptime();
+        // const uptime = getUptime();
 
         if (res.status === 429) {
             console.log('Rate limited, can\'t check status');
@@ -34,7 +34,7 @@ async function checkStatus() {
 
         if (statusChanged) {
             if (lastStatusChange) {
-                console.log(`Wplace just went ${isUp ? 'up' : 'down'}! It was ${isUp ? 'down' : 'up'} ${stateChangedSinceStart ? `for ${Math.round(getLastStatusChange().hours)} hour(s)` : `since I started (${Math.round(getLastStatusChange().hours)} hour(s) ago)`}${!isUp && uptime ? `, and the backends uptime was ${Math.round(uptime.hours)} hour(s)` : ''}`);
+                console.log(`Wplace just went ${isUp ? 'up' : 'down'}! It was ${isUp ? 'down' : 'up'} ${stateChangedSinceStart ? `for ${Math.round(getLastStatusChange().hours)} hour(s)` : `since I started (${Math.round(getLastStatusChange().hours)} hour(s) ago)`}${!isUp && lastHealth?.uptime ? `, and the backends uptime was ${lastHealth.uptime}` : ''}`);
                 alertStatus();
                 stateChangedSinceStart = true;
             }
@@ -50,7 +50,7 @@ async function checkStatus() {
 
 async function alertStatus() {
     const isUp = status === 1;
-    const uptime = getUptime();
+    // const uptime = getUptime();
 
     const message = {
         embeds: [
@@ -63,9 +63,9 @@ async function alertStatus() {
                         name: `${isUp ? 'Down' : 'Up'} since`,
                         value: new Date(lastStatusChange).toUTCString()
                     }] : []),
-                    ...(!isUp && uptime ? [{
+                    ...(!isUp && lastHealth?.uptime ? [{
                         name: 'Backend uptime',
-                        value: `${Math.round(uptime.hours)} hour(s)`
+                        value: lastHealth.uptime
                     }] : [])
                 ]
             }
